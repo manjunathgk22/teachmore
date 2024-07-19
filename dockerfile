@@ -8,14 +8,17 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm install
 
+# Install nodemon globally for hot reload
+RUN npm install -g nodemon
+
 # Copy the application files
 COPY . .
 
+# Generate Prisma client
 RUN npx prisma generate
-
 
 # Expose the port the app runs on
 EXPOSE 3000
 
-# Start the application
-CMD ["npm", "run", "dev"]
+# Start the application with nodemon for hot reload
+CMD ["nodemon", "--watch", ".", "--exec", "npm", "run", "dev"]

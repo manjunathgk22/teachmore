@@ -8,7 +8,7 @@ services:
       - "27017:27017"
     volumes:
       - mongodb_data:/data/db
-      - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js  # Mount the script      
+      - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js
     networks:
       - mynetwork
     command: ["mongod", "--replSet", "rs0"]
@@ -23,6 +23,8 @@ services:
       - mongodb
     environment:
       DATABASE_URL: "mongodb://mongodb:27017/mydatabase"  # This matches the MongoDB service name
+    volumes:
+      - ./:/app  # Mount the current directory to /app in the container
     networks:
       - mynetwork
 
