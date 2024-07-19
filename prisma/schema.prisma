@@ -1,0 +1,71 @@
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "linux-arm64-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  username     String   @unique
+  passwordHash String
+  role         String
+  class        String
+  section      String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Grade {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  grade     String   @unique
+  subjects  String[]
+}
+
+model Question {
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  createdBy     String
+  grade         String
+  subject       String
+  type          String
+  questionText  String
+  options       String[]
+  correctAnswer String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model Test {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  createdBy   String
+  grade       String
+  subject     String
+  questions   String[]
+  scheduledAt DateTime
+  timeLimit   Int
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Submission {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  testId      String   @db.ObjectId
+  studentId   String   @db.ObjectId
+  answers     Answer[] @relation("SubmissionToAnswers")
+  submittedAt DateTime
+  graded      Boolean  @default(false)
+  score       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Answer {
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  submissionId  String   @db.ObjectId
+  submission    Submission @relation(fields: [submissionId], references: [id], name: "SubmissionToAnswers")
+  questionId    String   @db.ObjectId
+  answer        String
+}
