@@ -8,14 +8,15 @@ export default function Home() {
   const createUser = api.router.user.create.useMutation()
   const handleSubmit = async(e:FormEventHandler)=>{
     e.preventDefault()
-    const data = new FormData(ref.current as HTMLFormElement)
+    const data = new FormData(ref.current)
     const name = data.get('name') ?? '' 
-    const passwordhash = data.get('passwordhash') ?? '' 
+    const email = data.get('email') ?? '' 
+    const password = data.get('password') ?? '' 
     const classs = data.get('class') ?? '' 
     const section = data.get('section') ?? '' 
-    console.log(name, passwordhash, classs, section)
+    console.log(name, password, classs, section)
     try {
-      await createUser.mutateAsync({username: name, passwordHash: passwordhash, role: 'student', class: classs, section: section})
+      await createUser.mutateAsync({name: name, email:email, password: password, role: 'student', class: classs, section: section})
 
     } catch (error) {
       console.log(error)
@@ -32,7 +33,8 @@ export default function Home() {
       <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#2e026d] to-[#15162c]">
         <form ref={ref} onSubmit={handleSubmit} className="flex flex-col gap-4">
           <input name="name" placeholder="name"></input>
-          <input name='passwordhash' placeholder='passwordhash'></input>
+          <input name="email" placeholder="email"></input>
+          <input name='password' placeholder='password'></input>
           <input name="class" placeholder="class"></input>
           <input name="section" placeholder="section"></input>
           <button className="bg-white p-2" onClick={handleSubmit} type="submit">Submit</button>
