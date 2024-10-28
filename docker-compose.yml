@@ -5,28 +5,25 @@ services:
     image: mongo:latest
     container_name: mongodb
     ports:
-      - "27017:27017"
+      - 27017:27017
     volumes:
       - mongodb_data:/data/db
-      - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js
     networks:
       - mynetwork
-    command: >
-      mongod --replSet rs0 --bind_ip_all
+    command: mongod --replSet rs0 --bind_ip_all
     healthcheck:
-      test: >
+      test: |
         mongosh --eval "
-          try {
-            rs.status().ok;
-          } catch (err) {
-            rs.initiate({_id:'rs0',members:[{_id:0,host:'mongodb:27017'}]});
-            false;
-          }
-        "
+          if (!rs.isMaster().ismaster) {
+            rs.initiate({
+              _id: 'rs0',
+              members: [{ _id: 0, host: 'localhost:27017' }]
+            });
+          }"
       interval: 10s
       timeout: 10s
-      retries: 5
-      start_period: 40s
+      retries: 3
+      start_period: 20s
 
   t3-app:
     build:
@@ -38,7 +35,7 @@ services:
       mongodb:
         condition: service_healthy
     environment:
-      DATABASE_URL: "mongodb://mongodb:27017/mydatabase?replicaSet=rs0&directConnection=true"
+      DATABASE_URL: "mongodb://mongodb:27017/mydatabase?replicaSet=rs0"
     volumes:
       - ./:/app
     networks:
@@ -49,3 +46,4 @@ volumes:
 
 networks:
   mynetwork:
+    driver: bridge
