@@ -1,11 +1,12 @@
+import { answerRouter } from './answer';
 // src/server/api/routers/index.ts
 import { createTRPCRouter } from '../trpc';
-import { userRouter } from './user';
 import { gradeRouter } from './grade';
 import { questionRouter } from './question';
-import { testRouter } from './test';
+import { sessionRouter } from './create-session';
 import { submissionRouter } from './submission';
-import { answerRouter } from './answer';
+import { testRouter } from './test';
+import { userRouter } from './user';
 
 export const appRouter = createTRPCRouter({
   user: userRouter,
@@ -14,6 +15,7 @@ export const appRouter = createTRPCRouter({
   test: testRouter,
   submission: submissionRouter,
   answer: answerRouter,
+  createSession: sessionRouter
 });
 
 export type AppRouter = typeof appRouter;
